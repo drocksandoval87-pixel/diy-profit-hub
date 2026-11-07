@@ -1,26 +1,110 @@
 
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
 <title>DIY Profit Hub</title>
 <style>
-body {
-  background: #101827;
-  color: white;
-  font-family: Arial;
-  text-align: center;
-  padding: 40px 15px;
-}
-h1 { color: orange; }
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:#18263a}
+h1{color:#ff9d35;margin:0}
+header p{color:#c4cedc}
+main{padding:18px;max-width:850px;margin:auto}
+input{width:100%;padding:14px;border:0;border-radius:10px;margin:12px 0}
+button{background:#ff9d35;color:#171717;border:0;padding:11px 15px;border-radius:8px;font-weight:bold;margin:4px}
+.filters{margin:12px 0}
+.card{background:#1c2b40;padding:16px;border-radius:12px;margin:12px 0}
+.card h3{margin-top:0}
+.tag{color:#ffb45c;font-size:13px}
+.ad{border:1px dashed #ff9d35;padding:18px;text-align:center;border-radius:10px;color:#ffb45c;margin:20px 0}
+footer{text-align:center;padding:25px;color:#aab5c4}
 </style>
 </head>
 <body>
+<header>
 <h1>DIY PROFIT HUB</h1>
-<h2>Build it. Create it. Sell it. Profit.</h2>
-<p>Welcome to your DIY business!</p>
-<p>Your website is working!</p>
+<p>Build it. Create it. Sell it. Profit.</p>
+</header>
+
+<main>
+<h2>Find Your Next Project</h2>
+<input id="search" placeholder="Search DIY projects..." oninput="render()">
+
+<div class="filters">
+<button onclick="setCategory('All')">All</button>
+<button onclick="setCategory('Woodworking')">Woodworking</button>
+<button onclick="setCategory('Papercraft')">Papercraft</button>
+<button onclick="setCategory('Home')">Home Projects</button>
+<button onclick="setCategory('Favorites')">♥ Favorites</button>
+</div>
+
+<div class="ad">
+<strong>Sponsored Advertisement</strong>
+<p>Advertisement space — coming soon!</p>
+</div>
+
+<div id="projects"></div>
+</main>
+
+<footer>DIY Profit Hub © 2026</footer>
+
+<script>
+const items=[
+{title:"Industrial Shoe Rack",category:"Woodworking",description:"Build a stylish shoe rack using wood and metal pipe.",cost:"$25–$45",price:"$75–$120"},
+{title:"Floating Wall Shelf",category:"Woodworking",description:"Create a modern floating shelf for your home.",cost:"$10–$20",price:"$35–$60"},
+{title:"3D Paper Horse",category:"Papercraft",description:"Make a detailed low-poly paper horse display.",cost:"$5–$10",price:"$20–$40"},
+{title:"Desktop Organizer",category:"Home",description:"Build a handy organizer for your desk.",cost:"$8–$15",price:"$25–$45"},
+{title:"Decorative Gift Box",category:"Papercraft",description:"Create a custom folded gift box.",cost:"$2–$5",price:"$10–$20"},
+{title:"Garage Tool Rack",category:"Woodworking",description:"Organize tools with a homemade wall rack.",cost:"$15–$30",price:"$45–$80"}
+];
+
+let category="All";
+let favorites=JSON.parse(localStorage.getItem("favorites")||"[]");
+
+function setCategory(value){
+category=value;
+render();
+}
+
+function toggleFavorite(title){
+if(favorites.includes(title)){
+favorites=favorites.filter(x=>x!==title);
+}else{
+favorites.push(title);
+}
+localStorage.setItem("favorites",JSON.stringify(favorites));
+render();
+}
+
+function render(){
+const search=document.getElementById("search").value.toLowerCase();
+const filtered=items.filter(item=>{
+const matchesCategory=category==="All" ||
+(category==="Favorites"?favorites.includes(item.title):item.category===category);
+return matchesCategory &&
+(item.title+" "+item.description+" "+item.category).toLowerCase().includes(search);
+});
+
+document.getElementById("projects").innerHTML=filtered.length?
+filtered.map(item=>`
+<div class="card">
+<div class="tag">${item.category}</div>
+<h3>${item.title}</h3>
+<p>${item.description}</p>
+<p><strong>Estimated materials:</strong> ${item.cost}</p>
+<p><strong>Example selling price:</strong> ${item.price}</p>
+<button onclick="toggleFavorite('${item.title}')">
+${favorites.includes(item.title)?"♥ Saved":"♡ Save Project"}
+</button>
+</div>`).join("")
+:"<p>No projects found. Try another search.</p>";
+}
+
+render();
+</script>
 </body>
 </html>
-
